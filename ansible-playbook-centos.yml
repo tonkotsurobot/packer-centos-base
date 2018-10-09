@@ -1,0 +1,96 @@
+
+#Install packages
+- hosts: all
+  become: yes
+  tasks:
+    - name: Allow 'wheel' group to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: Install a list of packages
+      yum:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+        - unzip
+        - perl
+
+    - name: remove the firewalld package	
+      yum:	
+        name: firewalld	
+        state: absent
+
+    - name: remove packer symbolic link
+      file:
+        state: absent
+        path: "/usr/sbin/packer"
+
+    - name: download packer
+      get_url:
+        url: "http://192.168.1.30:8000/bin/packer"
+        dest: /usr/bin/packer
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: download terraform
+      get_url:
+        url: "http://192.168.1.30:8000/bin/terraform"
+        dest: /usr/bin/terraform
+        owner: root
+        group: root
+        mode: 0755
+  
+<<<<<<< HEAD
+=======
+    - name: remove buildkite-agent default config
+      file:
+        state: absent
+        path: "/etc/buildkite-agent/buildkite-agent.cfg"
+
+    - name: download buildkite-agent config
+      get_url:
+        url: "http://192.168.1.30:8000/config/buildkite-agent.cfg"
+        dest: /etc/buildkite-agent/buildkite-agent.cfg
+        owner: buildkite-agent
+        group: buildkite-agent
+        mode: 0600
+
+    - name: Create folder /var/lib/buildkite-agent/.ssh
+      file:
+        path: /var/lib/buildkite-agent/.ssh
+        state: directory
+        mode: 0600
+        owner: buildkite-agent
+        group: buildkite-agent
+
+    - name: download buildkite-agent private key
+      get_url:
+        url: "http://192.168.1.30:8000/config/id_rsa"
+        dest: /var/lib/buildkite-agent/.ssh/id_rsa
+        owner: buildkite-agent
+        group: buildkite-agent
+        mode: 0600
+
+    - name: download buildkite-agent public key
+      get_url:
+        url: "http://192.168.1.30:8000/config/id_rsa.pub"
+        dest: /var/lib/buildkite-agent/.ssh/id_rsa.pub
+        owner: buildkite-agent
+        group: buildkite-agent
+        mode: 0644
+
+    - name: Enable and restart buildkite-agent services
+      service:
+        name: "{{ item }}"
+        enabled: yes
+        state: restarted
+      with_items:
+        - buildkite-agent
+>>>>>>> parent of 5cbb76e... fixed up permission on .ssh
+

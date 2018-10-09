@@ -1,8 +1,8 @@
 {
   "builders": [
     {
-      "name": "centos-buildkite-agent",
-      "vm_name":  "centos-buildkite-agent",
+      "name": "centos-base",
+      "vm_name":  "centos-base",
       "type": "vmware-iso",
       "communicator": "ssh",
       "ssh_pty": "true",

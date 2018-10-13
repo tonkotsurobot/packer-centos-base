@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # centos-base
 
 Centos base image with:
@@ -8,6 +8,3 @@ Centos base image with:
 
 Build using packer, ansible, on esxi
 
-=======
-# centos-buildkite-agent
->>>>>>> parent of 5cbb76e... fixed up permission on .ssh

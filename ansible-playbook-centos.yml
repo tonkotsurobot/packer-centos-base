@@ -19,6 +19,7 @@
         packages:
         - unzip
         - perl
+        - vim-enhanced
 
     - name: remove the firewalld package	
       yum:	

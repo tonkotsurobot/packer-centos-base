@@ -19,4 +19,4 @@ export VCENTER_SERVER=CHANGEME
 export VCENTER_USERNAME=CHANGEME
 export VCENTER_PASSWORD=CHANGEME
 packer validate packer-centos.json
-packer build packer-centos.json
+packer build --force packer-centos.json

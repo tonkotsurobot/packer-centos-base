@@ -1,0 +1,8 @@
+steps:
+  - label: ":hammer: Read credentials"
+    command: wget -P /tmp http://192.168.1.30:8000/scripts/vcenter_cred && chmod u+x /tmp/vcenter_cred && /tmp/vcenter_cred
+
+  - wait
+
+  - label: ":package: Build centos-base image"
+    command: packer build --force packer-centos.json

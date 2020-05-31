@@ -1,62 +1,63 @@
 {
+  "variables": {
+    "vcenter_server": "{{env `VCENTER_SERVER`}}",
+    "vcenter_username": "{{env `VCENTER_USERNAME`}}",
+    "vcenter_password": "{{env `VCENTER_PASSWORD`}}"
+  },
   "builders": [
     {
-      "name": "centos-base",
-      "vm_name":  "centos-base",
-      "type": "vmware-iso",
-      "communicator": "ssh",
-      "ssh_pty": "true",
+      "type": "vsphere-iso",
+      "vcenter_server":      "{{user `vcenter_server`}}",
+      "username":            "{{user `vcenter_username`}}",
+      "password":            "{{user `vcenter_password`}}",
+      "insecure_connection": "true",
+      "vm_name": "centos-base",
+      "cluster": "HOME",
+      "host":     "192.168.1.50",
+      "guest_os_type": "centos7_64Guest",
+
+      "CPUs":             2,
+      "RAM":              2048,
+      "RAM_reserve_all": true,
 
 
-      "guest_os_type": "rhel7-64",
-      "tools_upload_flavor": "linux",
-      "headless": false,
-      "disk_size": 8192,
-      "iso_url": "http://192.168.1.30:8000/CentOS-7-x86_64-Minimal-1804.iso",
+      "disk_size":        8192,
+      "disk_thin_provisioned": true,
+
+      "network_card": "vmxnet3",
+      "cdrom_type": "sata",
+      "iso_urls": [
+        "http://192.168.1.30:8000/CentOS-7-x86_64-Minimal-1804.iso"
+      ],
       "iso_checksum": "714acc0aefb32b7d51b515e25546835e55a90da9fb00417fbee2d03a62801efd",
       "iso_checksum_type": "sha256",
-      "vnc_disable_password": "True",
+      
       "ssh_username": "tempuser",
       "ssh_password": "tempuser",
       "ssh_timeout": "15m",
-      "disk_type_id": "thin",
-
 
       "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; echo 'tempuser'|sudo -S sh 'shutdown.sh'",
-      "remote_type": "esx5",
-      "remote_host": "{{user `esxi_host`}}",
-      "remote_datastore": "{{user `esxi_datastore`}}",
-      "remote_username": "{{user `esxi_username`}}",
-      "remote_password": "{{user `esxi_password`}}",
-      "keep_registered": true,
-      "keep_registered": true,
-      "http_directory": ".",
       "boot_wait": "7s",
+      "convert_to_template": true,
 
-      "vmx_data": {
-        "ethernet0.networkName": "VS-192.168.1.0"
-      },
-      "boot_command": [
-        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/ks.cfg<enter><wait>"
+      "floppy_files": ["ks.cfg"],
+      "boot_command": [        
+        "<esc><wait>",        
+        "linux ks=hd:fd0:/ks.cfg<enter>"      
       ]
- 
     }],
 
 
   "provisioners": [
     {
       "type": "file",
-      "source": "authorized_keys",
-      "destination": "/tmp/authorized_keys"
-    }, 
-    {
-      "type": "file",
       "source": "sshd_config",
       "destination": "/tmp/sshd_config"
     },
     {
-      "type": "shell",
-      "inline": ["cd /tmp && wget http://192.168.1.30:8000/scripts/centos-ansible.sh"]
+      "type": "file",
+      "source": "centos-ansible.sh",
+      "destination": "/tmp/centos-ansible.sh"
     },
     {
       "inline": [

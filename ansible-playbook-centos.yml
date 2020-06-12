@@ -31,19 +31,4 @@
         state: absent
         path: "/usr/sbin/packer"
 
-    - name: download packer
-      get_url:
-        url: "http://192.168.1.30:8000/bin/packer"
-        dest: /usr/bin/packer
-        owner: root
-        group: root
-        mode: 0755
-
-    - name: download terraform
-      get_url:
-        url: "http://192.168.1.30:8000/bin/terraform"
-        dest: /usr/bin/terraform
-        owner: root
-        group: root
-        mode: 0755
 

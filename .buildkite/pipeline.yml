@@ -7,4 +7,4 @@ steps:
   - wait
     
   - trigger: "tf-centos-base"
-    label: ":sidekiq: "Redeploy VM"
+    label: ":sidekiq: Redeploy VM"

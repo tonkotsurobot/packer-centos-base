@@ -1,0 +1,32 @@
+env:
+  BUILDKITE_CLEAN_CHECKOUT: true
+
+steps:
+  - name: "validate .tf files"
+    plugins:
+      docker-compose:
+        pull: validate
+        run: validate
+    agents:
+      vm: "true"
+      home: "true"
+
+  - name: "destroy resources"
+    plugins:
+      docker-compose:
+        pull: destroy
+        run: destroy
+    agents:
+      vm: "true"
+      home: "true"
+
+  - wait
+  
+  - name: "build resources"
+    plugins:
+      docker-compose:
+        pull: build
+        run: build
+    agents:
+      vm: "true"
+      home: "true"

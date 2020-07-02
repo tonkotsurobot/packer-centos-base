@@ -1,0 +1,23 @@
+version: '3'
+services:
+  packer-validate:
+    image: hashicorp/packer:1.6.0
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
+      - GIT_SSH_COMMAND=ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+    volumes:
+      - .:/workdir
+    working_dir: /workdir
+    entrypoint: sh
+    command: -c "scripts/packer-validate.sh"
+
+  packer-build:
+    image: hashicorp/packer:1.6.0
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
+      - GIT_SSH_COMMAND=ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+    volumes:
+      - .:/workdir
+    working_dir: /workdir
+    entrypoint: sh
+    command: -c "scripts/packer-build.sh"

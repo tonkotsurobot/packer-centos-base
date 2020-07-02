@@ -1,79 +1,81 @@
 {
-  "variables": {
-    "vcenter_server": "{{env `VCENTER_SERVER`}}",
-    "vcenter_username": "{{env `VCENTER_USERNAME`}}",
-    "vcenter_password": "{{env `VCENTER_PASSWORD`}}"
-  },
   "builders": [
     {
-      "type": "vsphere-iso",
-      "vcenter_server":      "{{user `vcenter_server`}}",
-      "username":            "{{user `vcenter_username`}}",
-      "password":            "{{user `vcenter_password`}}",
-      "insecure_connection": "true",
-      "vm_name": "centos-base",
-      "cluster": "HOME",
-      "host":     "192.168.1.50",
-      "guest_os_type": "centos7_64Guest",
-
-      "CPUs":             2,
-      "RAM":              2048,
+      "CPUs": 2,
+      "RAM": 2048,
       "RAM_reserve_all": true,
-
-
-      "disk_size":        8192,
-      "disk_thin_provisioned": true,
-
-      "network_card": "vmxnet3",
+      "boot_command": [
+        "<esc><wait>",
+        "linux ks=hd:fd0:/ks.cfg<enter>"
+      ],
+      "boot_wait": "7s",
       "cdrom_type": "sata",
+      "cluster": "HOME",
+      "convert_to_template": true,
+      "floppy_files": [
+        "ks.cfg"
+      ],
+      "guest_os_type": "centos7_64Guest",
+      "host": "192.168.1.50",
+      "insecure_connection": "true",
+      "iso_checksum": "sha256:714acc0aefb32b7d51b515e25546835e55a90da9fb00417fbee2d03a62801efd",
       "iso_urls": [
         "http://192.168.1.30:8000/CentOS-7-x86_64-Minimal-1804.iso"
       ],
-      "iso_checksum": "714acc0aefb32b7d51b515e25546835e55a90da9fb00417fbee2d03a62801efd",
-      "iso_checksum_type": "sha256",
-      
-      "ssh_username": "tempuser",
+      "network_adapters": [
+        {
+          "network_card": "vmxnet3"
+        }
+      ],
+      "password": "{{user `vcenter_password`}}",
+      "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; echo 'tempuser'|sudo -S sh 'shutdown.sh'",
       "ssh_password": "tempuser",
       "ssh_timeout": "15m",
-
-      "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; echo 'tempuser'|sudo -S sh 'shutdown.sh'",
-      "boot_wait": "7s",
-      "convert_to_template": true,
-
-      "floppy_files": ["ks.cfg"],
-      "boot_command": [        
-        "<esc><wait>",        
-        "linux ks=hd:fd0:/ks.cfg<enter>"      
-      ]
-    }],
-
-
+      "ssh_username": "tempuser",
+      "storage": [
+        {
+          "disk_size": 8192,
+          "disk_thin_provisioned": true
+        }
+      ],
+      "type": "vsphere-iso",
+      "username": "{{user `vcenter_username`}}",
+      "vcenter_server": "{{user `vcenter_server`}}",
+      "vm_name": "centos-base"
+    }
+  ],
   "provisioners": [
     {
-      "type": "file",
+      "destination": "/tmp/sshd_config",
       "source": "sshd_config",
-      "destination": "/tmp/sshd_config"
+      "type": "file"
     },
     {
-      "type": "file",
+      "destination": "/tmp/centos-ansible.sh",
       "source": "centos-ansible.sh",
-      "destination": "/tmp/centos-ansible.sh"
+      "type": "file"
     },
     {
-      "inline": [
-        "chmod a+x /tmp/centos-ansible.sh && /tmp/centos-ansible.sh"
-      ],
-      "type": "shell",
-      "execute_command": "echo 'tempuser' | {{ .Vars }} sudo -E -S bash '{{ .Path }}'"
-    },
-    {
-      "type": "ansible-local",
-      "playbook_file": "./ansible-playbook-centos.yml"
-    },
-    {
-      "type": "shell",
       "execute_command": "echo 'tempuser' | {{ .Vars }} sudo -E -S bash '{{ .Path }}'",
-      "script": "scripts/centos-vmware-cleanup.sh"
+      "inline": [
+        "chmod a+x /tmp/centos-ansible.sh \u0026\u0026 /tmp/centos-ansible.sh"
+      ],
+      "type": "shell"
+    },
+    {
+      "playbook_file": "./ansible-playbook-centos.yml",
+      "type": "ansible-local"
+    },
+    {
+      "execute_command": "echo 'tempuser' | {{ .Vars }} sudo -E -S bash '{{ .Path }}'",
+      "script": "scripts/centos-vmware-cleanup.sh",
+      "type": "shell"
     }
-  ]    
+  ],
+  "variables": {
+    "vcenter_password": "{{env `VCENTER_PASSWORD`}}",
+    "vcenter_server": "{{env `VCENTER_SERVER`}}",
+    "vcenter_username": "{{env `VCENTER_USERNAME`}}"
+  }
 }
+

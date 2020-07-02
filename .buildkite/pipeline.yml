@@ -1,11 +1,25 @@
 steps:
-  - label: ":hammer: Read credentials and build"
-    command: wget -P /tmp http://192.168.1.30:8000/scripts/vcenter_cred.sh && chmod u+x /tmp/vcenter_cred.sh && . /tmp/vcenter_cred.sh && packer build --force packer-centos.json
-    retry:
-      automatic: true
+
+  - name: "Validate packer configuration"
+    plugins:
+      docker-compose:
+        pull: packer-validate
+        run: packer-validate
     agents:
+      vm: "true"
       home: "true"
-      
+
+  - wait
+
+  - name: "Force build packer image"
+    plugins:
+      docker-compose:
+        pull: packer-build
+        run: packer-build
+    agents:
+      vm: "true"
+      home: "true"
+
   - wait
     
   - trigger: "tf-centos-base"

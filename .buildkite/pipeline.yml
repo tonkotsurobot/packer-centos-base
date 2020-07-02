@@ -1,21 +1,3 @@
-#steps:
-#  - label: ""
-#    command: wget -P /tmp http://192.168.1.30:8000/scripts/vcenter_cred.sh && chmod u+x /tmp/vcenter_cred.sh && . /tmp/vcenter_cred.sh && packer build --force packer-centos.json
-#    retry:
-#      automatic: true
-#    agents:
-#      home: "true"
-#      vm:true
-#      
-#  - wait
-#    
-#  - trigger: "tf-centos-base"
-#    label: ":sidekiq: Redeploy VM"
-
-
-#env:
-#  BUILDKITE_CLEAN_CHECKOUT: true
-
 steps:
 
   - name: "Validate packer configuration"
@@ -37,30 +19,8 @@ steps:
     agents:
       vm: "true"
       home: "true"
-#
-#  - wait
-#    
-#  - trigger: "tf-centos-base"
-#    label: ":sidekiq: Redeploy VM"
 
-
-
-#  - name: "destroy resources"
-#    plugins:
-#      docker-compose:
-#        pull: destroy
-#        run: destroy
-#    agents:
-#      vm: "true"
-#      home: "true"
-#
-#  - wait
-#  
-#  - name: "build resources"
-#    plugins:
-#      docker-compose:
-#        pull: build
-#        run: build
-#    agents:
-#      vm: "true"
-#      home: "true"
+  - wait
+    
+  - trigger: "tf-centos-base"
+    label: ":sidekiq: Redeploy VM"

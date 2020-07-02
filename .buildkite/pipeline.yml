@@ -27,6 +27,7 @@ steps:
       vm: "true"
       home: "true"
 
+  -wait
 
   - name: "Force build packer image"
     plugins:

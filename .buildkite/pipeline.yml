@@ -19,8 +19,3 @@ steps:
     agents:
       vm: "true"
       home: "true"
-
-  - wait
-    
-  - trigger: "tf-centos-base"
-    label: ":sidekiq: Redeploy VM"
